@@ -69,7 +69,7 @@ MCPサーバーとして `initialize` に応答し、以下のツールを提供
 
 *   **MCP Method:** `tools/call`
 *   **Tool Name:** `upsert_file_and_commit`
-*   **説明:** 指定されたブランチにMarkdownファイルを作成または上書きし、コミットします。ブランチや関連するDraft PRが存在しない場合は自動的に作成します。
+*   **説明:** 指定されたブランチにMarkdownファイルを作成または上書きし、コミットします。ブランチが存在しない場合は自動的に作成します。
 *   **入力 (`params.arguments`):**
     *   `filePath`: `string` - 必須。`GITHUB_TARGET_DIRECTORY` からの相対パス。`.md` 拡張子でなければならない。
     *   `branchName`: `string` - 必須。作業ブランチ名（例: `user123-energy-policy-revamp-1678886400`）。GitHubのブランチ名制約に従うこと。
@@ -80,12 +80,11 @@ MCPサーバーとして `initialize` に応答し、以下のツールを提供
         *   `filePath` が `.md` で終わるか、不正なパス (`../` など) を含んでいないか確認。
         *   `branchName`, `content`, `commitMessage` が空でないか確認。
     2.  **GitHubクライアント取得:** `getAuthenticatedOctokit()` を呼び出し、Installation Token で認証された Octokit インスタンスを取得。
-    3.  **ブランチ/PR存在確認と作成:** `ensureBranchAndPrExists(octokit, branchName)` を呼び出す。
+    3.  **ブランチ存在確認と作成:** `ensureBranchExists(octokit, branchName)` を呼び出す（`github/utils.ts` 内で実装想定）。
         *   内部で `branchName` の存在を `octokit.rest.git.getRef` で確認。
         *   存在しない場合:
             a.  `GITHUB_BASE_BRANCH` の最新コミットSHAを取得 (`octokit.rest.git.getRef`)。
             b.  新しいブランチを作成 (`octokit.rest.git.createRef`)。
-            c.  Draft PR を作成 (`octokit.rest.pulls.create`)。タイトルは `WIP: Proposing changes in ${filePath}` など、本文は空または定型文、`draft: true` を設定。
     4.  **ファイルパス組み立て:** `fullPath = path.join(GITHUB_TARGET_DIRECTORY, filePath)`。
     5.  **既存ファイル情報取得:** `octokit.rest.repos.getContent({ ..., path: fullPath, ref: branchName })` を呼び出し、現在のファイルSHAを取得。ファイルが存在しない場合は 404 エラーが返るが、これは正常系として扱う。
     6.  **ファイル作成/更新:** `octokit.rest.repos.createOrUpdateFileContents` を呼び出す。
@@ -104,7 +103,7 @@ MCPサーバーとして `initialize` に応答し、以下のツールを提供
     ```json
     {
       "title": "Update File and Commit",
-      "description": "Creates or updates a specified Markdown file in a branch and commits the changes. Automatically creates the branch and a draft pull request if they don't exist.",
+      "description": "Creates or updates a specified Markdown file in a branch and commits the changes. Automatically creates the branch if it doesn't exist.",
       "readOnlyHint": false,
       "destructiveHint": false, // 上書きはするが、破壊的というよりは編集
       "idempotentHint": false,  // 同じ内容でもコミットは増える可能性がある
@@ -116,7 +115,7 @@ MCPサーバーとして `initialize` に応答し、以下のツールを提供
 
 *   **MCP Method:** `tools/call`
 *   **Tool Name:** `update_pr_description`
-*   **説明:** 指定されたブランチに対応するオープンなDraft PRの説明文（本文）を更新します。
+*   **説明:** 指定されたブランチに対応するオープンなDraft PRの説明文（本文）を更新します。もしPRが存在しない場合は、新しいDraft PRを作成します。
 *   **入力 (`params.arguments`):**
     *   `branchName`: `string` - 必須。対象の作業ブランチ名。
     *   `description`: `string` - 必須。新しいPRの説明文。
@@ -125,9 +124,9 @@ MCPサーバーとして `initialize` に応答し、以下のツールを提供
     2.  **GitHubクライアント取得:** `getAuthenticatedOctokit()` を呼び出す。
     3.  **PR検索:** `octokit.rest.pulls.list({ ..., head: `${GITHUB_TARGET_OWNER}:${branchName}`, state: 'open' })` を呼び出し、指定ブランチをheadとするオープンなPRを検索。
     4.  **PR特定:**
-        *   リストが空の場合: エラー「指定されたブランチに対応するオープンなPRが見つかりません。」を返す。
-        *   リストに複数のPRがある場合 (通常はありえない): 最初のPRを使うか、エラーとする（要検討、ここでは最初のPRを使う）。
-        *   PRが見つかった場合、`pull_number` を取得。
+        *   リストが空の場合: 新しいDraft PRを作成 (`octokit.rest.pulls.create`)。タイトルは `WIP: Changes for ${branchName}` など、本文は `description`、`draft: true` を設定。`pull_number` を取得。
+        *   リストに複数のPRがある場合 (通常はありえない): 最初のPRを使う。`pull_number` を取得。
+        *   PRが1つ見つかった場合: `pull_number` を取得。
     5.  **PR更新:** `octokit.rest.pulls.update({ ..., pull_number, body: description })` を呼び出し、説明文を更新。
     6.  **成功レスポンス:** 更新されたPRのURLを含む `CallToolResult` を返す。
     7.  **エラーハンドリング:** GitHub APIエラーが発生した場合、エラー内容を含む `CallToolResult` (`isError: true`) を返す。
@@ -138,7 +137,7 @@ MCPサーバーとして `initialize` に応答し、以下のツールを提供
     ```json
     {
       "title": "Update Pull Request Description",
-      "description": "Updates the description (body) of the open pull request associated with the specified branch.",
+      "description": "Updates the description (body) of the open pull request associated with the specified branch. Creates a draft PR if none exists.",
       "readOnlyHint": false,
       "destructiveHint": false,
       "idempotentHint": true,   // 同じ説明文で何度呼んでも結果は同じ
@@ -156,7 +155,7 @@ src/
 ├── server.ts         # MCP Serverインスタンス、ツールハンドラ登録
 ├── github/
 │   ├── client.ts     # GitHub App認証、Octokitインスタンス生成
-│   └── utils.ts      # ブランチ/PR存在確認・作成などのヘルパー関数
+│   └── utils.ts      # ブランチ存在確認・作成、PR作成などのヘルパー関数
 ├── handlers/
 │   ├── upsertFile.ts # upsert_file_and_commit ツールハンドラ
 │   └── updatePr.ts   # update_pr_description ツールハンドラ
@@ -181,7 +180,8 @@ tsconfig.json
 
 #### 5.3. GitHub ユーティリティ (`github/utils.ts`)
 
-*   `ensureBranchAndPrExists(octokit, branchName)`: 上記「処理フロー」で説明したブランチとDraft PRの確認・作成ロジックを実装。作成した場合はPR情報を返すか、voidでも良い。
+*   `ensureBranchExists(octokit, branchName)`: 上記 `upsert_file_and_commit` の処理フローで説明したブランチの確認・作成ロジックを実装。
+*   `findOrCreateDraftPr(octokit, branchName, title, body)`: 指定ブランチに対するオープンなPRを検索し、存在すればその情報を返す。存在しなければ新しいDraft PRを作成してその情報を返す。`update_pr_description` で使用。
 *   その他、共通化できるAPI呼び出し（例: ファイル内容取得など）があればここにまとめる。
 
 #### 5.4. エラーハンドリング
