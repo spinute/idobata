@@ -26,7 +26,7 @@ const initializeMcpClient = async (serverPath: string): Promise<void> => {
 router.post('/', async (req, res) => {
     try {
         // Extract message, history, and the new context fields
-        const { message, history, branchId, fileContent } = req.body;
+        const { message, history, branchId, fileContent, userName } = req.body;
 
         if (!message || typeof message !== 'string') {
             return res.status(400).json({ error: 'Message is required and must be a string' });
@@ -37,6 +37,9 @@ router.post('/', async (req, res) => {
         }
         if (fileContent && typeof fileContent !== 'string') {
             return res.status(400).json({ error: 'fileContent must be a string if provided' });
+        }
+        if (userName && typeof userName !== 'string') {
+            return res.status(400).json({ error: 'userName must be a string if provided' });
         }
 
         // Validate history if provided
@@ -49,7 +52,7 @@ router.post('/', async (req, res) => {
         }
 
         // Pass message, history, and context to processQuery
-        const response = await mcpClient.processQuery(message, history || [], branchId, fileContent);
+        const response = await mcpClient.processQuery(message, history || [], branchId, fileContent, userName);
         return res.json({ response });
     } catch (error) {
         logger.error('Error processing chat message:', error);

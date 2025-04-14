@@ -46,7 +46,7 @@ const Breadcrumbs: React.FC = () => {
           <Link
             to="/view/" // ルートパスを指定
             className="flex items-center text-blue-600 hover:text-blue-800 hover:underline"
-            title={`${repoOwner}/${repoName} Root`}
+            title={`${repoOwner}/${repoName} ルート`}
           >
             <FaHome className="mr-1 h-4 w-4" />
             <span className="font-medium">{repoName}</span>

@@ -69,7 +69,7 @@ const ContentExplorer: React.FC<ContentExplorerProps> = ({ initialPath }) => {
       return <FileView data={content as GitHubFile} />;
     }
     // 初期状態やデータがない場合
-    return <div className="p-4 text-center text-gray-500">Select a file or directory.</div>;
+    return <div className="p-4 text-center text-gray-500">ファイルまたはディレクトリを選択してください。</div>;
   };
 
   return (
@@ -93,7 +93,7 @@ const ContentExplorer: React.FC<ContentExplorerProps> = ({ initialPath }) => {
         if (viewingBranchId) {
           return (
             <div className="mt-2 mb-3 px-3 py-1 bg-yellow-100 border border-yellow-300 text-yellow-800 rounded-md text-sm inline-block">
-              <span className="font-semibold">更新用下書き</span> (Branch: {viewingBranchId})
+              <span className="font-semibold">更新用下書き</span> (ブランチ: {viewingBranchId})
             </div>
           );
         }

@@ -32,9 +32,9 @@ const FileView: React.FC<FileViewProps> = ({ data }) => {
     // Display message for non-markdown files
     return (
       <div className="p-4 border rounded bg-gray-50 text-center">
-        <p className="font-semibold text-gray-700">File: {data.name}</p>
+        <p className="font-semibold text-gray-700">ファイル：{data.name}</p>
         <p className="mt-2 text-sm text-gray-500">
-          Preview is not supported for this file type.
+          このファイルタイプのプレビューはサポートされていません。
         </p>
         {/* Optionally, add a download link if available */}
         {/* {data.download_url && (
@@ -44,7 +44,7 @@ const FileView: React.FC<FileViewProps> = ({ data }) => {
             rel="noopener noreferrer"
             className="mt-4 inline-block px-4 py-2 bg-blue-500 text-white text-xs rounded hover:bg-blue-600"
           >
-            Download File
+            ファイルをダウンロード
           </a>
         )} */}
       </div>

@@ -19,7 +19,7 @@ interface DirectoryViewProps {
 
 const DirectoryView: React.FC<DirectoryViewProps> = ({ data }) => {
   if (!data || data.length === 0) {
-    return <div className="p-4 text-center text-gray-500">This directory is empty.</div>;
+    return <div className="p-4 text-center text-gray-500">このディレクトリは空です。</div>;
   }
 
   // Data is assumed to be pre-sorted by the store (folders first, then files, alphabetically)
@@ -32,7 +32,7 @@ const DirectoryView: React.FC<DirectoryViewProps> = ({ data }) => {
             <Link
               to={`/view/${item.path}`} // Navigate to the item's path
               className="flex items-center p-3 text-sm"
-              title={`Go to ${item.type === 'dir' ? 'directory' : 'file'} ${item.name}`}
+              title={`${item.type === 'dir' ? 'ディレクトリ' : 'ファイル'} ${item.name} へ移動`}
             >
               {item.type === 'dir' ? (
                 <FaFolder className="w-5 h-5 mr-3 text-blue-500 flex-shrink-0" />
