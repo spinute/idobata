@@ -2,7 +2,7 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import logger from './logger.js';
 // import { z } from 'zod'; // Zod is imported in handlers now
 import { handleUpsertFile, upsertFileSchema } from "./handlers/upsertFile.js"; // インポート追加
-import { handleUpdatePrDescription, updatePrSchema } from "./handlers/updatePr.js"; // インポート追加
+import { handleUpdatePr, updatePrSchema } from "./handlers/updatePr.js"; // インポート追加
 
 // サーバーインスタンスを作成
 const server = new McpServer({
@@ -31,8 +31,8 @@ server.tool(
 
 // update_pr_description ツールを登録
 const updatePrAnnotations = {
-    title: "Update Pull Request Description",
-    description: "Updates the description (body) of the open pull request associated with the specified branch.",
+    title: "Update Pull Request Title and Description",
+    description: "Updates the title and/or description (body) of the open pull request associated with the specified branch.",
     readOnlyHint: false,
     destructiveHint: false,
     idempotentHint: true, // 同じ説明文なら結果は同じ
@@ -40,9 +40,9 @@ const updatePrAnnotations = {
 };
 
 server.tool(
-    "update_pr_description",
+    "update_pr",
     updatePrSchema.shape, // Pass the Zod schema shape
-    handleUpdatePrDescription // Pass the handler function
+    handleUpdatePr // Pass the handler function
     // Remove annotations argument for now
 );
 
