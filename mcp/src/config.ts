@@ -10,7 +10,6 @@ const envSchema = z.object({
     GITHUB_INSTALLATION_ID: z.string(),
     GITHUB_TARGET_OWNER: z.string(),
     GITHUB_TARGET_REPO: z.string(),
-    GITHUB_TARGET_DIRECTORY: z.string().optional().default(''), // ルートの場合は空文字
     GITHUB_BASE_BRANCH: z.string().default('main'),
     GITHUB_API_BASE_URL: z.string().optional(), // GHE用
 });

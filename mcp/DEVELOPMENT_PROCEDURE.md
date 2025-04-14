@@ -230,7 +230,6 @@
       GITHUB_INSTALLATION_ID: z.string(),
       GITHUB_TARGET_OWNER: z.string(),
       GITHUB_TARGET_REPO: z.string(),
-      GITHUB_TARGET_DIRECTORY: z.string().optional().default(''), // ルートの場合は空文字
       GITHUB_BASE_BRANCH: z.string().default('main'),
       GITHUB_API_BASE_URL: z.string().optional(), // GHE用
     });
@@ -489,8 +488,6 @@
       const { filePath, branchName, content, commitMessage } = params;
       const owner = config.GITHUB_TARGET_OWNER;
       const repo = config.GITHUB_TARGET_REPO;
-      // GITHUB_TARGET_DIRECTORY が空文字の場合、joinすると先頭に / がつくことがあるため調整
-      const targetDir = config.GITHUB_TARGET_DIRECTORY || '.';
       const fullPath = path.posix.join(targetDir === '.' ? '' : targetDir, filePath); // posix.joinで常に / 区切りに
 
       logger.info({ owner, repo, branchName, fullPath }, `Handling upsert_file_and_commit request`);
@@ -614,7 +611,7 @@
 
 1.  **サーバーを起動 (`npm run dev` or `npm start`)**
 2.  **`mcp-cli` でツールを呼び出す:**
-    *   **テスト用のブランチ名** (例: `test-mcp-upsert-1`) と **テスト用のファイルパス** (例: `test/my-doc.md`) を指定します。`GITHUB_TARGET_DIRECTORY` が設定されている場合は、そのディレクトリからの相対パスになります。
+    *   **テスト用のブランチ名** (例: `test-mcp-upsert-1`) と **テスト用のファイルパス** (例: `test/my-doc.md`) を指定します。
     *   **初回実行 (ブランチ・PR・ファイルが存在しない場合):**
         ```bash
         mcp-cli call tools/call --server-command "npm run dev" '{
@@ -808,7 +805,6 @@
         *   PR説明更新
         *   存在しないブランチ/PRに対する操作
         *   不正な入力（ファイルパス、ブランチ名など）
-        *   `GITHUB_TARGET_DIRECTORY` が設定されている場合/されていない場合
         *   （可能であれば）同時に複数のリクエストを実行した場合の挙動
 
 ## 5. まとめ

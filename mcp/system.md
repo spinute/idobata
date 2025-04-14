@@ -40,7 +40,6 @@ OKです。`github-contribution-mcp` サーバーの実装にフォーカスし�
 | `GITHUB_INSTALLATION_ID`   | GitHub App をインストールしたリポジトリの Installation ID                | Yes  | `98765432`                              |
 | `GITHUB_TARGET_OWNER`      | 操作対象リポジトリのオーナー名 (ユーザー名 or Organization名)          | Yes  | `my-org`                                |
 | `GITHUB_TARGET_REPO`       | 操作対象リポジトリ名                                                 | Yes  | `policy-proposals`                      |
-| `GITHUB_TARGET_DIRECTORY`  | 操作対象ディレクトリ (リポジトリルートからの相対パス、末尾スラッシュなし) | Yes  | `policies/energy` (ルートの場合は空文字) |
 | `GITHUB_BASE_BRANCH`     | PR作成時のベースブランチ名                                           | Yes  | `main`                                  |
 | `LOG_LEVEL`                | ログレベル (`trace`, `debug`, `info`, `warn`, `error`, `fatal`)      | No   | `info` (デフォルト)                     |
 | `GITHUB_API_BASE_URL`      | (任意) GitHub Enterprise等を使用する場合のAPIエンドポイント           | No   | `https://github.example.com/api/v3`     |
@@ -71,7 +70,7 @@ MCPサーバーとして `initialize` に応答し、以下のツールを提供
 *   **Tool Name:** `upsert_file_and_commit`
 *   **説明:** 指定されたブランチにMarkdownファイルを作成または上書きし、コミットします。ブランチが存在しない場合は自動的に作成します。
 *   **入力 (`params.arguments`):**
-    *   `filePath`: `string` - 必須。`GITHUB_TARGET_DIRECTORY` からの相対パス。`.md` 拡張子でなければならない。
+    *   `filePath`: `string` - 必須。`.md` 拡張子でなければならない。
     *   `branchName`: `string` - 必須。作業ブランチ名（例: `user123-energy-policy-revamp-1678886400`）。GitHubのブランチ名制約に従うこと。
     *   `content`: `string` - 必須。更新後のファイル内容全体（UTF-8文字列）。
     *   `commitMessage`: `string` - 必須。コミットメッセージ。
@@ -84,8 +83,7 @@ MCPサーバーとして `initialize` に応答し、以下のツールを提供
         *   内部で `branchName` の存在を `octokit.rest.git.getRef` で確認。
         *   存在しない場合:
             a.  `GITHUB_BASE_BRANCH` の最新コミットSHAを取得 (`octokit.rest.git.getRef`)。
-            b.  新しいブランチを作成 (`octokit.rest.git.createRef`)。
-    4.  **ファイルパス組み立て:** `fullPath = path.join(GITHUB_TARGET_DIRECTORY, filePath)`。
+            b.  新しいブランチを作成 (`octokit.rest.git.createRef`)。`。
     5.  **既存ファイル情報取得:** `octokit.rest.repos.getContent({ ..., path: fullPath, ref: branchName })` を呼び出し、現在のファイルSHAを取得。ファイルが存在しない場合は 404 エラーが返るが、これは正常系として扱う。
     6.  **ファイル作成/更新:** `octokit.rest.repos.createOrUpdateFileContents` を呼び出す。
         *   `owner`, `repo`: 環境変数から取得。
@@ -115,19 +113,20 @@ MCPサーバーとして `initialize` に応答し、以下のツールを提供
 
 *   **MCP Method:** `tools/call`
 *   **Tool Name:** `update_pr_description`
-*   **説明:** 指定されたブランチに対応するオープンなDraft PRの説明文（本文）を更新します。もしPRが存在しない場合は、新しいDraft PRを作成します。
+*   **説明:** 指定されたブランチに対応するオープンなDraft PRのタイトルや説明文（本文）を更新します。もしPRが存在しない場合は、新しいDraft PRを作成します。
 *   **入力 (`params.arguments`):**
     *   `branchName`: `string` - 必須。対象の作業ブランチ名。
     *   `description`: `string` - 必須。新しいPRの説明文。
+    *   `title`: `string` - (任意) 新しいPRのタイトル。指定しない場合、既存のタイトルを維持するか、新規作成時はデフォルトタイトルを使用。
 *   **処理フロー:**
     1.  **入力バリデーション:** `branchName`, `description` が空でないか確認。
     2.  **GitHubクライアント取得:** `getAuthenticatedOctokit()` を呼び出す。
     3.  **PR検索:** `octokit.rest.pulls.list({ ..., head: `${GITHUB_TARGET_OWNER}:${branchName}`, state: 'open' })` を呼び出し、指定ブランチをheadとするオープンなPRを検索。
     4.  **PR特定:**
-        *   リストが空の場合: 新しいDraft PRを作成 (`octokit.rest.pulls.create`)。タイトルは `WIP: Changes for ${branchName}` など、本文は `description`、`draft: true` を設定。`pull_number` を取得。
+        *   リストが空の場合: 新しいDraft PRを作成 (`octokit.rest.pulls.create`)。タイトルは入力 `title` があればそれを使用、なければ `WIP: Changes for ${branchName}` など。本文は `description`、`draft: true` を設定。`pull_number` を取得。
         *   リストに複数のPRがある場合 (通常はありえない): 最初のPRを使う。`pull_number` を取得。
         *   PRが1つ見つかった場合: `pull_number` を取得。
-    5.  **PR更新:** `octokit.rest.pulls.update({ ..., pull_number, body: description })` を呼び出し、説明文を更新。
+    5.  **PR更新:** `octokit.rest.pulls.update` を呼び出し、`pull_number` と `body: description` を指定。入力 `title` が提供されていれば、`title` も更新パラメータに含める。
     6.  **成功レスポンス:** 更新されたPRのURLを含む `CallToolResult` を返す。
     7.  **エラーハンドリング:** GitHub APIエラーが発生した場合、エラー内容を含む `CallToolResult` (`isError: true`) を返す。
 *   **出力 (`CallToolResult`):**
@@ -137,7 +136,7 @@ MCPサーバーとして `initialize` に応答し、以下のツールを提供
     ```json
     {
       "title": "Update Pull Request Description",
-      "description": "Updates the description (body) of the open pull request associated with the specified branch. Creates a draft PR if none exists.",
+      "description": "Updates the title and/or description (body) of the open pull request associated with the specified branch. Creates a draft PR if none exists.",
       "readOnlyHint": false,
       "destructiveHint": false,
       "idempotentHint": true,   // 同じ説明文で何度呼んでも結果は同じ

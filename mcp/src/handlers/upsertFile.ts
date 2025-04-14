@@ -31,9 +31,8 @@ export async function handleUpsertFile(params: UpsertFileInput): Promise<CallToo
     const { filePath, branchName, content, commitMessage } = params;
     const owner = config.GITHUB_TARGET_OWNER;
     const repo = config.GITHUB_TARGET_REPO;
-    // GITHUB_TARGET_DIRECTORY が空文字の場合、joinすると先頭に / がつくことがあるため調整
-    const targetDir = config.GITHUB_TARGET_DIRECTORY || '.';
-    const fullPath = path.posix.join(targetDir === '.' ? '' : targetDir, filePath); // posix.joinで常に / 区切りに
+    // Ensure filePath doesn't start with '/' as path.posix.join might behave unexpectedly.
+    const fullPath = filePath.startsWith('/') ? filePath.substring(1) : filePath;
 
     logger.info({ owner, repo, branchName, fullPath }, `Handling upsert_file_and_commit request`);
 

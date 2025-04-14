@@ -50,18 +50,23 @@ interface GitHubApiError {
  * @param owner リポジトリのオーナー名
  * @param repo リポジトリ名
  * @param path 取得するファイルまたはディレクトリのパス (ルートの場合は空文字列)
+ * @param ref 取得するブランチ名、タグ名、またはコミットSHA (オプション)
  * @returns 成功時はファイル情報(GitHubFile)またはディレクトリ情報(GitHubDirectoryItem[])、失敗時はエラーをスロー
  */
 export async function fetchGitHubContent(
     owner: string,
     repo: string,
-    path: string = ''
+    path: string = '',
+    ref?: string // Add optional ref parameter
 ): Promise<GitHubFile | GitHubDirectoryItem[]> {
     if (!owner || !repo) {
         throw new Error('Repository owner and name are required.');
     }
 
-    const apiUrl = `https://api.github.com/repos/${owner}/${repo}/contents/${path}`;
+    let apiUrl = `https://api.github.com/repos/${owner}/${repo}/contents/${path}`;
+    if (ref) {
+        apiUrl += `?ref=${encodeURIComponent(ref)}`; // Append ref query parameter if provided
+    }
     console.log(`Fetching from GitHub API: ${apiUrl}`); // デバッグ用ログ
 
     try {
