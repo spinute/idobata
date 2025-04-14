@@ -3,12 +3,6 @@ import useContentStore from '../store/contentStore'; // Import the Zustand store
 import { decodeBase64Content } from '../lib/github'; // Import the decoder
 import type { GitHubFile } from '../lib/github'; // Import the type
 import MarkdownViewer from './MarkdownViewer'; // Import the MarkdownViewer component
-// Message type definition (can be shared or imported if defined elsewhere)
-interface Message {
-  id: number;
-  text: string;
-  sender: 'user' | 'bot';
-}
 
 // Define the structure for OpenAI API messages
 interface OpenAIMessage {
