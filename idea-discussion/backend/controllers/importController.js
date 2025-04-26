@@ -1,18 +1,22 @@
-import ImportedItem from '../models/ImportedItem.js'; // Use import and add .js extension
+import ImportedItem from "../models/ImportedItem.js"; // Use import and add .js extension
 // Import the extraction worker function directly
-import { processExtraction } from '../workers/extractionWorker.js';
+import { processExtraction } from "../workers/extractionWorker.js";
 
 /**
  * @description Handle generic data import (e.g., tweets)
  * @route POST /api/import/generic
  * @access Private (or Public, depending on requirements)
  */
-export const importGenericData = async (req, res, next) => { // Use export const
+export const importGenericData = async (req, res, next) => {
+  // Use export const
   const { sourceType, content, metadata } = req.body;
 
   // Basic validation
   if (!sourceType || !content) {
-    return res.status(400).json({ success: false, message: 'Missing required fields: sourceType and content' });
+    return res.status(400).json({
+      success: false,
+      message: "Missing required fields: sourceType and content",
+    });
   }
 
   // No validation for sourceType - allowing any string value
@@ -23,7 +27,7 @@ export const importGenericData = async (req, res, next) => { // Use export const
       sourceType,
       content,
       metadata: metadata || {}, // Ensure metadata is at least an empty object
-      status: 'pending',
+      status: "pending",
     });
 
     // Add a job to the extraction queue
@@ -40,16 +44,22 @@ export const importGenericData = async (req, res, next) => { // Use export const
       };
       // Call processExtraction with a mock job structure { data: jobData }
       // The worker expects job.data
-      processExtraction({ data: jobData }).catch(err => {
-        console.error(`[Async Extraction Call] Error for imported item ${newItem._id}:`, err);
+      processExtraction({ data: jobData }).catch((err) => {
+        console.error(
+          `[Async Extraction Call] Error for imported item ${newItem._id}:`,
+          err
+        );
       });
-      console.log(`[ImportController] Triggered async extraction for item ${newItem._id}`);
+      console.log(
+        `[ImportController] Triggered async extraction for item ${newItem._id}`
+      );
     }, 0);
 
     res.status(201).json({ success: true, data: newItem });
-
   } catch (error) {
-    console.error('Error importing generic data:', error);
-    res.status(500).json({ success: false, message: 'Server error during import' });
+    console.error("Error importing generic data:", error);
+    res
+      .status(500)
+      .json({ success: false, message: "Server error during import" });
   }
 };

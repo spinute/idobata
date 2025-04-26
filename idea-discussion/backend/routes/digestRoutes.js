@@ -1,9 +1,8 @@
-import express from 'express';
-import { getDigestDrafts } from '../controllers/digestController.js';
+import express from "express";
+import { getDigestDrafts } from "../controllers/digestController.js";
 
 const router = express.Router();
 
-router.get('/', getDigestDrafts);
-
+router.get("/", getDigestDrafts);
 
 export default router;
