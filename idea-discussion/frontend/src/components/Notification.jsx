@@ -34,6 +34,7 @@ function Notification({ message, onClose, duration = 5000 }) {
             className="h-4 w-4 mr-2 flex-shrink-0"
             viewBox="0 0 20 20"
             fill="currentColor"
+            aria-hidden="true"
           >
             <path
               fillRule="evenodd"

@@ -23,7 +23,7 @@ export async function handleUpdatePr(
 
   logger.info(
     { owner, repo, branchName, title: !!title },
-    `Handling update_pr request`
+    "Handling update_pr request"
   );
 
   try {
@@ -83,13 +83,24 @@ export async function handleUpdatePr(
         },
       ],
     };
-  } catch (error: any) {
+  } catch (error: unknown) {
     logger.error(
       { error, params },
       `Error processing update_pr for branch ${branchName}`
     );
-    const errorMessage = error.message || "Unknown error";
-    const status = error.status ? ` (Status: ${error.status})` : "";
+    let errorMessage = "Unknown error";
+    let status = "";
+    if (error && typeof error === "object") {
+      if ("message" in error && typeof error.message === "string") {
+        errorMessage = error.message;
+      }
+      if (
+        "status" in error &&
+        (typeof error.status === "number" || typeof error.status === "string")
+      ) {
+        status = ` (Status: ${error.status})`;
+      }
+    }
     return {
       isError: true,
       content: [

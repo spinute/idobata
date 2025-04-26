@@ -99,7 +99,7 @@ const ThreadExtractions = ({ threadId }) => {
         {problems.length > 0 && (
           <div className="bg-white p-2 md:p-3 border border-neutral-200 rounded-lg shadow-sm">
             <h4 className="font-medium text-primary-dark flex items-center gap-1 md:gap-2 mb-1 md:mb-2 text-xs md:text-sm">
-              <span className="w-1.5 h-1.5 md:w-2 md:h-2 rounded-full bg-primary inline-block"></span>
+              <span className="w-1.5 h-1.5 md:w-2 md:h-2 rounded-full bg-primary inline-block" />
               課題 ({problems.length})
             </h4>
             <ul className="space-y-2">
@@ -118,7 +118,7 @@ const ThreadExtractions = ({ threadId }) => {
         {solutions.length > 0 && (
           <div className="bg-white p-2 md:p-3 border border-neutral-200 rounded-lg shadow-sm">
             <h4 className="font-medium text-success flex items-center gap-1 md:gap-2 mb-1 md:mb-2 text-xs md:text-sm">
-              <span className="w-1.5 h-1.5 md:w-2 md:h-2 rounded-full bg-success inline-block"></span>
+              <span className="w-1.5 h-1.5 md:w-2 md:h-2 rounded-full bg-success inline-block" />
               解決策 ({solutions.length})
             </h4>
             <ul className="space-y-2">

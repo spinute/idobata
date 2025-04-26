@@ -77,7 +77,7 @@ Analyze the relationship and provide the JSON output.`,
       try {
         const llmResponse = await callLLM(promptMessages, true); // Request JSON output
 
-        if (llmResponse && llmResponse.is_relevant) {
+        if (llmResponse?.is_relevant) {
           console.log(
             `[LinkingWorker] Found relevant link: Question ${question._id} <-> ${itemType} ${itemId} (Type: ${llmResponse.link_type})`
           );

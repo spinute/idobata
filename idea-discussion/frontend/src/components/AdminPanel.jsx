@@ -32,7 +32,7 @@ function AdminPanel() {
     } else if (activeTab === "solutions" && solutions.length === 0) {
       fetchSolutions();
     }
-  }, [activeTab]);
+  }, [activeTab, problems.length, solutions.length]);
 
   const fetchQuestions = async () => {
     setIsLoadingQuestions(true);
@@ -167,7 +167,7 @@ function AdminPanel() {
   const truncateText = (text, maxLength = 100) => {
     if (!text) return "";
     return text.length > maxLength
-      ? text.substring(0, maxLength) + "..."
+      ? `${text.substring(0, maxLength)}...`
       : text;
   };
 
@@ -185,6 +185,7 @@ function AdminPanel() {
               className="h-5 w-5 mr-2"
               viewBox="0 0 20 20"
               fill="currentColor"
+              aria-hidden="true"
             >
               <path
                 fillRule="evenodd"
@@ -205,6 +206,7 @@ function AdminPanel() {
               className="h-5 w-5 mr-2"
               viewBox="0 0 20 20"
               fill="currentColor"
+              aria-hidden="true"
             >
               <path
                 fillRule="evenodd"
@@ -232,6 +234,7 @@ function AdminPanel() {
             onClick={handleGenerateQuestions}
             disabled={isGeneratingQuestions}
             className="btn bg-primary text-white px-4 py-2 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 text-sm whitespace-nowrap hover:bg-primary-dark"
+            type="button"
           >
             {isGeneratingQuestions ? (
               <span className="flex items-center">
@@ -240,6 +243,7 @@ function AdminPanel() {
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
                   viewBox="0 0 24 24"
+                  aria-hidden="true"
                 >
                   <circle
                     className="opacity-25"
@@ -248,12 +252,12 @@ function AdminPanel() {
                     r="10"
                     stroke="currentColor"
                     strokeWidth="4"
-                  ></circle>
+                  />
                   <path
                     className="opacity-75"
                     fill="currentColor"
                     d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                  ></path>
+                  />
                 </svg>
                 生成中...
               </span>
@@ -275,6 +279,7 @@ function AdminPanel() {
                   ? "text-primary border-b-2 border-primary"
                   : "text-neutral-500 hover:text-neutral-700 hover:border-neutral-300"
               }`}
+              type="button"
             >
               シャープな問い
             </button>
@@ -287,6 +292,7 @@ function AdminPanel() {
                   ? "text-primary border-b-2 border-primary"
                   : "text-neutral-500 hover:text-neutral-700 hover:border-neutral-300"
               }`}
+              type="button"
             >
               課題
             </button>
@@ -299,6 +305,7 @@ function AdminPanel() {
                   ? "text-primary border-b-2 border-primary"
                   : "text-neutral-500 hover:text-neutral-700 hover:border-neutral-300"
               }`}
+              type="button"
             >
               解決策
             </button>
@@ -311,6 +318,7 @@ function AdminPanel() {
                   ? "text-primary border-b-2 border-primary"
                   : "text-neutral-500 hover:text-neutral-700 hover:border-neutral-300"
               }`}
+              type="button"
             >
               政策ドラフト
             </button>
@@ -323,6 +331,7 @@ function AdminPanel() {
                   ? "text-success border-b-2 border-success"
                   : "text-neutral-500 hover:text-neutral-700 hover:border-neutral-300"
               }`}
+              type="button"
             >
               一般向けダイジェスト
             </button>
@@ -341,9 +350,9 @@ function AdminPanel() {
             {isLoadingQuestions ? (
               <div className="flex items-center justify-center p-8">
                 <div className="animate-pulse-slow flex space-x-2">
-                  <div className="w-2 h-2 bg-primary rounded-full"></div>
-                  <div className="w-2 h-2 bg-primary rounded-full"></div>
-                  <div className="w-2 h-2 bg-primary rounded-full"></div>
+                  <div className="w-2 h-2 bg-primary rounded-full" />
+                  <div className="w-2 h-2 bg-primary rounded-full" />
+                  <div className="w-2 h-2 bg-primary rounded-full" />
                 </div>
               </div>
             ) : questions.length > 0 ? (
@@ -399,9 +408,9 @@ function AdminPanel() {
             {isLoadingProblems ? (
               <div className="flex items-center justify-center p-8">
                 <div className="animate-pulse-slow flex space-x-2">
-                  <div className="w-2 h-2 bg-primary rounded-full"></div>
-                  <div className="w-2 h-2 bg-primary rounded-full"></div>
-                  <div className="w-2 h-2 bg-primary rounded-full"></div>
+                  <div className="w-2 h-2 bg-primary rounded-full" />
+                  <div className="w-2 h-2 bg-primary rounded-full" />
+                  <div className="w-2 h-2 bg-primary rounded-full" />
                 </div>
               </div>
             ) : problems.length > 0 ? (
@@ -466,9 +475,9 @@ function AdminPanel() {
             {isLoadingSolutions ? (
               <div className="flex items-center justify-center p-8">
                 <div className="animate-pulse-slow flex space-x-2">
-                  <div className="w-2 h-2 bg-primary rounded-full"></div>
-                  <div className="w-2 h-2 bg-primary rounded-full"></div>
-                  <div className="w-2 h-2 bg-primary rounded-full"></div>
+                  <div className="w-2 h-2 bg-primary rounded-full" />
+                  <div className="w-2 h-2 bg-primary rounded-full" />
+                  <div className="w-2 h-2 bg-primary rounded-full" />
                 </div>
               </div>
             ) : solutions.length > 0 ? (
@@ -533,9 +542,9 @@ function AdminPanel() {
             {isLoadingPolicyDrafts ? (
               <div className="flex items-center justify-center p-8">
                 <div className="animate-pulse-slow flex space-x-2">
-                  <div className="w-2 h-2 bg-primary rounded-full"></div>
-                  <div className="w-2 h-2 bg-primary rounded-full"></div>
-                  <div className="w-2 h-2 bg-primary rounded-full"></div>
+                  <div className="w-2 h-2 bg-primary rounded-full" />
+                  <div className="w-2 h-2 bg-primary rounded-full" />
+                  <div className="w-2 h-2 bg-primary rounded-full" />
                 </div>
               </div>
             ) : policyDrafts.length > 0 ? (
@@ -590,9 +599,9 @@ function AdminPanel() {
             {isLoadingDigestDrafts ? (
               <div className="flex items-center justify-center p-8">
                 <div className="animate-pulse-slow flex space-x-2">
-                  <div className="w-2 h-2 bg-success rounded-full"></div>
-                  <div className="w-2 h-2 bg-success rounded-full"></div>
-                  <div className="w-2 h-2 bg-success rounded-full"></div>
+                  <div className="w-2 h-2 bg-success rounded-full" />
+                  <div className="w-2 h-2 bg-success rounded-full" />
+                  <div className="w-2 h-2 bg-success rounded-full" />
                 </div>
               </div>
             ) : digestDrafts.length > 0 ? (

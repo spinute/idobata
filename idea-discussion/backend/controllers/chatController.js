@@ -109,7 +109,7 @@ const handleNewMessage = async (req, res) => {
             problemLinks.some((link) => link.linkedProblem)
           ) {
             referenceOpinions += "  関連性の高い課題:\n";
-            problemLinks.forEach((link) => {
+            for (const link of problemLinks) {
               if (link.linkedProblem) {
                 // Check if lookup worked
                 const problem = link.linkedProblem;
@@ -122,7 +122,7 @@ const handleNewMessage = async (req, res) => {
                   "N/A";
                 referenceOpinions += `    - ${statement})\n`;
               }
-            });
+            }
           } else {
             referenceOpinions += "  関連性の高い課題: (ありません)\n";
           }
@@ -162,13 +162,13 @@ const handleNewMessage = async (req, res) => {
           ) {
             referenceOpinions +=
               "  関連性の高い解決策 (最大10件, 関連度 >80%):\n";
-            solutionLinks.forEach((link) => {
+            for (const link of solutionLinks) {
               if (link.linkedSolution) {
                 // Check if lookup worked
                 const solution = link.linkedSolution;
                 referenceOpinions += `    - ${solution.statement || "N/A"})\n`;
               }
-            });
+            }
           } else {
             referenceOpinions += "  関連性の高い解決策: (ありません)\n";
           }

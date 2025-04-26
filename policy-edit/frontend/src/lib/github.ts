@@ -1,4 +1,4 @@
-import { Buffer } from "buffer";
+import { Buffer } from "node:buffer";
 
 // GitHub APIレスポンスの型定義 (必要に応じて詳細化)
 // ディレクトリの場合
@@ -107,9 +107,8 @@ export async function fetchGitHubContent(
     // fetch自体が失敗した場合 (ネットワークエラーなど)
     if (error instanceof Error) {
       throw error; // 元のエラーを再スロー
-    } else {
-      throw new Error("An unknown error occurred during fetch.");
     }
+    throw new Error("An unknown error occurred during fetch.");
   }
 }
 

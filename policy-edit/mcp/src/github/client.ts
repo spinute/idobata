@@ -1,5 +1,4 @@
 import fs from "node:fs";
-import path from "node:path";
 import { App } from "@octokit/app";
 import { restEndpointMethods } from "@octokit/plugin-rest-endpoint-methods";
 import type { RestEndpointMethodTypes } from "@octokit/plugin-rest-endpoint-methods"; // Use the documented type export
@@ -60,7 +59,7 @@ export async function getAuthenticatedOctokit(): Promise<InstallationOctokit> {
     try {
       const appInstance = getApp();
       const installationId = Number.parseInt(config.GITHUB_INSTALLATION_ID, 10);
-      if (isNaN(installationId)) {
+      if (Number.isNaN(installationId)) {
         throw new Error("Invalid GITHUB_INSTALLATION_ID. Must be a number.");
       }
 

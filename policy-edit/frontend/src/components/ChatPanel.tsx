@@ -34,7 +34,6 @@ const ChatPanel: React.FC = () => {
     currentPath,
     contentType, // Get the content type ('file' or 'dir')
     content, // Get the raw content object
-    chatThreads,
     getOrCreateChatThread,
     addMessageToThread,
     ensureBranchIdForThread,
@@ -52,7 +51,7 @@ const ChatPanel: React.FC = () => {
       return getOrCreateChatThread(currentPath);
     }
     return null; // Return null if no MD file is active
-  }, [isMdFileActive, currentPath, chatThreads, getOrCreateChatThread]); // chatThreads dependency is important
+  }, [isMdFileActive, currentPath, getOrCreateChatThread]); // chatThreads dependency is important
 
   const currentBranchId = useMemo(() => {
     if (isMdFileActive && currentPath) {
@@ -60,7 +59,7 @@ const ChatPanel: React.FC = () => {
       return ensureBranchIdForThread(currentPath);
     }
     return null;
-  }, [isMdFileActive, currentPath, ensureBranchIdForThread, chatThreads]); // chatThreads dependency ensures re-run after branchId is set
+  }, [isMdFileActive, currentPath, ensureBranchIdForThread]); // chatThreads dependency ensures re-run after branchId is set
 
   // Get messages for the current thread, or an empty array if none is active
   const messages = useMemo(() => {
@@ -147,7 +146,7 @@ const ChatPanel: React.FC = () => {
 
     initializeConnection();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // Run only once on mount
+  }, [addMessageToThread, error]);
 
   // Get user name on mount
   useEffect(() => {
@@ -193,7 +192,7 @@ const ChatPanel: React.FC = () => {
       chatContainerRef.current.scrollTop =
         chatContainerRef.current.scrollHeight;
     }
-  }, [messages]); // Depends on the derived messages state
+  }, []);
 
   // Connect to the weather MCP server
   const connectToGithubContributionServer = async () => {
@@ -406,6 +405,7 @@ const ChatPanel: React.FC = () => {
               }
             }}
             disabled={isLoading}
+            type="button"
             className="bg-green-500 text-white px-3 py-1 rounded-md text-sm hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 disabled:opacity-50"
           >
             {isLoading ? "接続中..." : "サーバーに接続"}
@@ -484,6 +484,7 @@ const ChatPanel: React.FC = () => {
             inputValue.trim() === ""
           } // Also disable if no MD file active or input is empty
           className="bg-blue-500 text-white px-4 py-2 rounded-r-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-blue-300"
+          type="button"
         >
           {isLoading ? "..." : "送信"}
         </button>

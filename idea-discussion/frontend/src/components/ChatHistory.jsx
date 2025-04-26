@@ -1,15 +1,16 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useCallback } from "react";
 
 function ChatHistory({ messages }) {
   const messagesEndRef = useRef(null);
 
-  const scrollToBottom = () => {
+  const scrollToBottom = useCallback(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
+  }, []);
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages]);
+  }, [scrollToBottom]);
+
   return (
     <div className="flex-grow p-3 md:p-4 overflow-y-auto space-y-4 md:space-y-6 custom-scrollbar">
       {messages.length === 0 && (
@@ -18,9 +19,9 @@ function ChatHistory({ messages }) {
         </div>
       )}
 
-      {messages.map((msg, index) => (
+      {messages.map((msg) => (
         <div
-          key={index}
+          key={msg._id}
           className={`${msg.role === "user" ? "flex justify-end" : "flex justify-start"} animate-fade-in`}
         >
           <div className="flex flex-col max-w-[85%] sm:max-w-[75%] md:max-w-[65%]">

@@ -3,7 +3,13 @@
   "vcs": { "enabled": false, "clientKind": "git", "useIgnoreFile": true },
   "files": {
     "ignoreUnknown": false,
-    "ignore": ["node_modules", "dist", "*.d.ts"]
+    "ignore": [
+      "node_modules",
+      "dist",
+      "*.d.ts",
+      "tsconfig.app.json",
+      "tsconfig.node.json"
+    ]
   },
 
   "formatter": { "enabled": true, "indentStyle": "space", "indentWidth": 2 },
@@ -17,7 +23,7 @@
   "javascript": {
     "formatter": {
       "quoteStyle": "double",
-      "trailingComma": "es5",
+      "trailingCommas": "es5",
       "semicolons": "always"
     }
   }

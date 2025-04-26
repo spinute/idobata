@@ -46,12 +46,12 @@ async function generatePolicyDraft(questionId) {
 
     // Create a map of IDs to relevanceScores for later use
     const relevanceScoreMap = new Map();
-    links.forEach((link) => {
+    for (const link of links) {
       relevanceScoreMap.set(
         link.linkedItemId.toString(),
         link.relevanceScore || 0
       );
-    });
+    }
 
     // Fetch problems and solutions
     const problems = await Problem.find({ _id: { $in: problemIds } });
