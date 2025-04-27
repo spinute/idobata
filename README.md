@@ -1,6 +1,6 @@
 # Idobataプロジェクト - 開発環境構築手順
 
-このドキュメントでは、`idea-discussion` および `policy-edit` アプリケーションの開発環境をDocker Composeを使用してセットアップし、実行する方法について説明します。これらは独立してセットアップ・実行可能です。
+このドキュメントは、Idobataプロジェクトの `idea-discussion` と `policy-edit` という2つのアプリケーションを、開発者が自分のコンピューターで動かすための準備手順を説明するものです。特別なツール（Docker Compose）を使いますが、この手順に従えばセットアップできます。`idea-discussion` と `policy-edit` は、それぞれ個別に準備して動かすことが可能です。
 
 ## プロジェクト構成
 
@@ -130,3 +130,5 @@ docker-compose down -v
     docker-compose up -d --no-deps <service_name>
     ```
     または、単に `docker-compose up --build -d` を再度実行します。
+
+---
